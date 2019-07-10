@@ -9,7 +9,7 @@ public class Main {
         String connectionURl = "jdbc:postgresql://localhost:5432/test";
         Class.forName("org.postgresql.Driver");
         try(Connection connection = DriverManager.getConnection(connectionURl, userName, password)){
-            System.out.println("We're connected");
+            System.out.println("We're connected!!!!");
         }
 
     }
