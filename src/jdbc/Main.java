@@ -1,5 +1,7 @@
 package jdbc;
 
+import sun.awt.image.IntegerInterleavedRaster;
+
 import java.sql.*;
 
 public class Main {
@@ -11,25 +13,45 @@ public class Main {
         try(Connection connection = DriverManager.getConnection(connectionURl, userName, password);
             Statement statement= connection.createStatement()) {
             System.out.println("We're connected!!!!");
-            statement.executeUpdate("DROP TABLE books");
-            statement.executeUpdate("CREATE TABLE Books (id SERIAL, name VARCHAR(30) NOT NULL , PRIMARY KEY (id) )");
-            statement.executeUpdate("INSERT INTO Books (name) VALUES('Inferno')");
-            statement.executeUpdate("INSERT INTO Books (name) VALUES('Solomon key')");
-            ResultSet resultSet = statement.executeQuery("SELECT  * FROM books");
+            statement.executeUpdate("DROP TABLE Users");
+            statement.executeUpdate("CREATE TABLE Users (id SERIAL, name VARCHAR(30) NOT NULL , password VARCHAR(30) NOT NULL, PRIMARY KEY (id) )");
+            statement.executeUpdate("INSERT INTO Users (name, password) VALUES ('max', '123')");
+            statement.executeUpdate("INSERT INTO Users (name, password) VALUES ('otherGuy', '312')");
+//            ResultSet resultSet = statement.executeQuery("SELECT  * FROM books");
+
+    //region data for request
+            String userID = "1";
+//            sql injection
+//            https://www.w3schools.com/sql/sql_injection.asp
+//            String userID = "1' or 1 = '1 ";
+    //endregion
+
+/*    //region sql injection
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Users WHERE id = '" + userID + " ' ");
             while (resultSet.next()){
-//                System.out.println(resultSet.getInt(1));
-                System.out.println(resultSet.getInt("id"));
-//                System.out.println(resultSet.getString(2));
-                System.out.println(resultSet.getString("name"));
-
-                System.out.println("-------------------");
+                System.out.println("userName: " + resultSet.getString("name"));
+                System.out.println("userPassword: " + resultSet.getString("password"));
             }
+    //endregion*/
 
-            System.out.println("__________________________");
-            ResultSet rs2 = statement.executeQuery("SELECT  name FROM books WHERE id = 1");
-            while(rs2.next()){
-                System.out.println(rs2.getString(1));
+//            System.out.println("-------------------------");
+
+
+
+
+    // region defend of sql injection
+            int user_ID = 1;
+//            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Users WHERE id = ? and name = ?");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Users WHERE id = ?");
+//            preparedStatement.setString(2,"userName");
+            preparedStatement.setInt(1,user_ID);
+            ResultSet resultSet1 = preparedStatement.executeQuery();
+            while (resultSet1.next()){
+                System.out.println("userName: " + resultSet1.getString("name"));
+                System.out.println("userPassword: " + resultSet1.getString("password"));
             }
+    //endregion
+
         }
     }
 }
